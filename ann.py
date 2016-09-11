@@ -76,7 +76,7 @@ def main(argv=None):
     
     count = 0.0
     errors = 0.0
-    for i in xrange(int(math.floor(inputData.shape[0] * (1-percentTest)))+1, inputData.shape[0]):
+    for i in xrange(int(math.floor(inputData.shape[0] * (1-percentTest))), inputData.shape[0]):
         #copy input data to input array
         inputLayer = inputData[i]
         inputLayer = numpy.reshape(inputLayer, (-1, 1)).T
