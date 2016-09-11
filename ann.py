@@ -1,6 +1,7 @@
 import numpy
 import os.path
 import sys
+import math
 
 
 def sigmoid(input):
@@ -47,7 +48,7 @@ def main(argv=None):
     hiddenWeights = 2*(numpy.random.random((numHidden, 1)))-1
     
     #loops over the training data 1000 times
-    for i in xrange(inputData.shape[0]):
+    for i in xrange(int(math.floor(inputData.shape[0] * (1-percentTest)))):
         #copy input data to input array
         inputLayer = inputData[i]
         inputLayer = numpy.reshape(inputLayer, (-1, 1)).T
@@ -72,6 +73,27 @@ def main(argv=None):
         #dot product produces a(i) * delta(j) for every node i connected to node j with weight weight[i][j]
         inputWeights = inputWeights+numpy.dot(inputLayer.T, hiddenDelta)
         hiddenWeights = hiddenWeights+numpy.dot(hiddenLayer.T, outputDelta)
+    
+    count = 0.0
+    errors = 0.0
+    for i in xrange(int(math.floor(inputData.shape[0] * (1-percentTest)))+1, inputData.shape[0]):
+        #copy input data to input array
+        inputLayer = inputData[i]
+        inputLayer = numpy.reshape(inputLayer, (-1, 1)).T
+        #forward propegate the input to the hidden layers
+        #dot product produces sum of node i output times weight Wi,j for all nodes i,j
+        hiddenLayerIN = numpy.dot(inputLayer, inputWeights)
+        hiddenLayer = sigmoid(hiddenLayerIN)
+        #forward propegate hidden layer outputs to the output layer
+        #dot product produces sum of node i output times weight Wi,j for all nodes i,j
+        outputLayerIN = numpy.dot(hiddenLayer, hiddenWeights)
+        outputLayer = sigmoid(outputLayerIN)
+        #calculate output layer hit or miss.
+        count += 1
+        if (not int(round(outputLayer[0])) == int(outputData[i][0])):
+            errors += 1
+    errorRate = errors/count
+    print "The error rate on the test data was: " + str(errorRate)
 
 
 main(sys.argv)
