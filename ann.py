@@ -33,6 +33,7 @@ def main(argv=None):
     
     #try and open file
     if os.path.isfile(argv[1]):
+        #read the file into the input and output arrays two inputs and one output
         inputData = numpy.loadtxt(argv[1],usecols=(0,1))
         outputData = numpy.loadtxt(argv[1],usecols=(2,))
         outputData = numpy.reshape(outputData, (-1, 1))
@@ -40,35 +41,37 @@ def main(argv=None):
         print "This file either doesn't exist or the name was misspelled"
         sys.exit(0)
     
-    #read the file into the input and output arrays two inputs and one output
-    #separate the data into the input and training data based on either the given percentage or the default value of 20%
-    
-    
     #initialize the input and hidden layer with random weights
-    
+    numpy.random.seed(1)
+    inputWeights = 2*(numpy.random.random((inputData.shape[1], numHidden)))-1
+    hiddenWeights = 2*(numpy.random.random((numHidden, 1)))-1
     
     #loops over the training data 1000 times
     for i in xrange(inputData.shape[0]):
-        sys.exit(0)
-        #set the input layer layer values form the input array
+        #copy input data to input array
         inputLayer = inputData[i]
-        #forwardprop the input to the hidden layers
+        inputLayer = numpy.reshape(inputLayer, (-1, 1)).T
+        #forward propegate the input to the hidden layers
+        #dot product produces sum of node i output times weight Wi,j for all nodes i,j
         hiddenLayerIN = numpy.dot(inputLayer, inputWeights)
         hiddenLayer = sigmoid(hiddenLayerIN)
-        #forwardprop hidden layer outputs to the output layer
+        #forward propegate hidden layer outputs to the output layer
+        #dot product produces sum of node i output times weight Wi,j for all nodes i,j
         outputLayerIN = numpy.dot(hiddenLayer, hiddenWeights)
         outputLayer = sigmoid(outputLayerIN)
         #calculate output layer error using the given data.
         outputError = outputData[i]-outputLayer
         #calculate the output layer delta.
         outputDelta = outputError*sigmoidDeriv(outputLayerIN)
-        #calc the hidden layer error using the output delta value and weights.
-        hiddenError = outputDelta.dot(hiddenWeights.T)
+        #calculate the hidden layer error using the output delta value and weights.
+        #dot product produces sum of delta[j] times weights Wi,j for all i,j (in this case i are hidden nodes and j are output nodes)
+        hiddenError = numpy.dot(outputDelta, hiddenWeights.T)
         #calculate the hidden layer delta by using the errors
         hiddenDelta = hiddenError*sigmoidDeriv(hiddenLayerIN)
         #modify input weights and hidden layer weights depending on the delta values and the output of the neurons.
-        inputWeights = inputWeights+inputLayer.dot(hiddenDelta)
-        hiddenWeights = hiddenWeights+hiddenLayer.dot(outputDelta)
+        #dot product produces a(i) * delta(j) for every node i connected to node j with weight weight[i][j]
+        inputWeights = inputWeights+numpy.dot(inputLayer.T, hiddenDelta)
+        hiddenWeights = hiddenWeights+numpy.dot(hiddenLayer.T, outputDelta)
 
 
 main(sys.argv)
