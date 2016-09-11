@@ -1,5 +1,4 @@
 import numpy
-import getopt
 import os.path
 import sys
 
@@ -16,31 +15,27 @@ def sigmoidDeriv(input):
 
 def main(argv=None):
     #check arguments & set defaults
-    print len(argv)
-    if len(argv) < 1:
+    if len(argv) > 6 or len(argv) < 2 or len(argv)%2==1:
         print "The correct input format is as follows: python ann.py <filename> [h <number of hidden nodes> | p <holdout percentage>]"
         return
     inputData = []
     outputData = []
     inputWeights = []
     outputWeights = []
+    numHidden = 5
+    percentTest = .2
     
-    try:
-        options, args = getopt.getopt(argv, "h:p:")
-    except getopt.GetoptError:
-        print "The correct input format is as follows: python ann.py <filename> [h <number of hidden nodes> | p <holdout percentage>]"
-        sys.exit(0)
-    
-    for option, arg in options:
-        if option == "h":
-            numHidden = arg
-        elif option == "p":
-            numPercent = arg
+    for i in xrange(len(argv)):
+        if argv[i] == "h":
+            numHidden = int(argv[i+1])
+        elif argv[i] == "p":
+            percentTest = float(argv[i+1])
     
     #try and open file
     if os.path.isfile(argv[1]):
         inputData = numpy.loadtxt(argv[1],usecols=(0,1))
-        outputData = numpy.loadtxt(argv[1],usecols=(2))
+        outputData = numpy.loadtxt(argv[1],usecols=(2,))
+        outputData = numpy.reshape(outputData, (-1, 1))
     else:
         print "This file either doesn't exist or the name was misspelled"
         sys.exit(0)
@@ -53,7 +48,8 @@ def main(argv=None):
     
     
     #loops over the training data 1000 times
-    for i in xrange(inputTrain.shape[0]):
+    for i in xrange(inputData.shape[0]):
+        sys.exit(0)
         #set the input layer layer values form the input array
         inputLayer = inputData[i]
         #forwardprop the input to the hidden layers
