@@ -17,7 +17,6 @@ def sigmoidDeriv(input):
 def main(argv=None):
     #check arguments & set defaults
     print len(argv)
-    str(len(argv))
     if len(argv) < 1:
         print "The correct input format is as follows: python ann.py <filename> [h <number of hidden nodes> | p <holdout percentage>]"
         return
@@ -54,14 +53,26 @@ def main(argv=None):
     
     
     #loops over the training data 1000 times
-    for i in xrange(1000):
+    for i in xrange(inputTrain.shape[0]):
         #set the input layer layer values form the input array
+        inputLayer = inputData[i]
         #forwardprop the input to the hidden layers
+        hiddenLayerIN = numpy.dot(inputLayer, inputWeights)
+        hiddenLayer = sigmoid(hiddenLayerIN)
         #forwardprop hidden layer outputs to the output layer
+        outputLayerIN = numpy.dot(hiddenLayer, hiddenWeights)
+        outputLayer = sigmoid(outputLayerIN)
         #calculate output layer error using the given data.
+        outputError = outputData[i]-outputLayer
         #calculate the output layer delta.
+        outputDelta = outputError*sigmoidDeriv(outputLayerIN)
         #calc the hidden layer error using the output delta value and weights.
+        hiddenError = outputDelta.dot(hiddenWeights.T)
         #calculate the hidden layer delta by using the errors
+        hiddenDelta = hiddenError*sigmoidDeriv(hiddenLayerIN)
         #modify input weights and hidden layer weights depending on the delta values and the output of the neurons.
-	
+        inputWeights = inputWeights+inputLayer.dot(hiddenDelta)
+        hiddenWeights = hiddenWeights+hiddenLayer.dot(outputDelta)
 
+
+main(sys.argv)
