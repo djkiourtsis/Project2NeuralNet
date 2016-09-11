@@ -95,8 +95,8 @@ def main(argv=None):
         if (not int(round(outputLayer[0])) == int(outputData[i][0])):
             errors += 1
     errorRate = errors/count
-    print count
-    print errors
+    print "Tests done: " + str(count)
+    print "Test errors: " + str(errors)
     print "The error rate on the test data was: " + str(errorRate)
 
 
