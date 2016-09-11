@@ -43,36 +43,38 @@ def main(argv=None):
         sys.exit(0)
     
     #initialize the input and hidden layer with random weights
+    #weight[i][j] is the weight between node i and j, and by default ranges between -1 and 1
     numpy.random.seed(1)
     inputWeights = 2*(numpy.random.random((inputData.shape[1], numHidden)))-1
     hiddenWeights = 2*(numpy.random.random((numHidden, 1)))-1
     
-    #loops over the training data 1000 times
-    for i in xrange(int(math.floor(inputData.shape[0] * (1-percentTest)))):
-        #copy input data to input array
-        inputLayer = inputData[i]
-        inputLayer = numpy.reshape(inputLayer, (-1, 1)).T
-        #forward propegate the input to the hidden layers
-        #dot product produces sum of node i output times weight Wi,j for all nodes i,j
-        hiddenLayerIN = numpy.dot(inputLayer, inputWeights)
-        hiddenLayer = sigmoid(hiddenLayerIN)
-        #forward propegate hidden layer outputs to the output layer
-        #dot product produces sum of node i output times weight Wi,j for all nodes i,j
-        outputLayerIN = numpy.dot(hiddenLayer, hiddenWeights)
-        outputLayer = sigmoid(outputLayerIN)
-        #calculate output layer error using the given data.
-        outputError = outputData[i]-outputLayer
-        #calculate the output layer delta.
-        outputDelta = outputError*sigmoidDeriv(outputLayerIN)
-        #calculate the hidden layer error using the output delta value and weights.
-        #dot product produces sum of delta[j] times weights Wi,j for all i,j (in this case i are hidden nodes and j are output nodes)
-        hiddenError = numpy.dot(outputDelta, hiddenWeights.T)
-        #calculate the hidden layer delta by using the errors
-        hiddenDelta = hiddenError*sigmoidDeriv(hiddenLayerIN)
-        #modify input weights and hidden layer weights depending on the delta values and the output of the neurons.
-        #dot product produces a(i) * delta(j) for every node i connected to node j with weight weight[i][j]
-        inputWeights = inputWeights+numpy.dot(inputLayer.T, hiddenDelta)
-        hiddenWeights = hiddenWeights+numpy.dot(hiddenLayer.T, outputDelta)
+    #loops over the training data
+    for j in xrange(100):
+        for i in xrange(int(math.floor(inputData.shape[0] * (1-percentTest)))):
+            #copy input data to input array
+            inputLayer = inputData[i]
+            inputLayer = numpy.reshape(inputLayer, (-1, 1)).T
+            #forward propegate the input to the hidden layers
+            #dot product produces sum of node i output times weight Wi,j for all nodes i,j
+            hiddenLayerIN = numpy.dot(inputLayer, inputWeights)
+            hiddenLayer = sigmoid(hiddenLayerIN)
+            #forward propegate hidden layer outputs to the output layer
+            #dot product produces sum of node i output times weight Wi,j for all nodes i,j
+            outputLayerIN = numpy.dot(hiddenLayer, hiddenWeights)
+            outputLayer = sigmoid(outputLayerIN)
+            #calculate output layer error using the given data.
+            outputError = outputData[i]-outputLayer
+            #calculate the output layer delta.
+            outputDelta = outputError*sigmoidDeriv(outputLayerIN)
+            #calculate the hidden layer error using the output delta value and weights.
+            #dot product produces sum of delta[j] times weights Wi,j for all i,j (in this case i are hidden nodes and j are output nodes)
+            hiddenError = numpy.dot(outputDelta, hiddenWeights.T)
+            #calculate the hidden layer delta by using the errors
+            hiddenDelta = hiddenError*sigmoidDeriv(hiddenLayerIN)
+            #modify input weights and hidden layer weights depending on the delta values and the output of the neurons.
+            #dot product produces a(i) * delta(j) for every node i connected to node j with weight weight[i][j]
+            inputWeights = inputWeights+numpy.dot(inputLayer.T, hiddenDelta)
+            hiddenWeights = hiddenWeights+numpy.dot(hiddenLayer.T, outputDelta)
     
     count = 0.0
     errors = 0.0
@@ -93,6 +95,8 @@ def main(argv=None):
         if (not int(round(outputLayer[0])) == int(outputData[i][0])):
             errors += 1
     errorRate = errors/count
+    print count
+    print errors
     print "The error rate on the test data was: " + str(errorRate)
 
 
